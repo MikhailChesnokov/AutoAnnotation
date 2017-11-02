@@ -1,6 +1,3 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -14,11 +11,10 @@ class Main {
     private final static int compressionPercent = 30;
 
     public static void main(String[] args) {
-        // TODO: keyword list
-
-        Map<String,List<String>> sentenceToTokenList = runMyStem()
+        Map<String,List<String>> sentenceToTokenList = MyStemRunner.runMyStem()
                 .stream()
                 .flatMap(Main::splitIntoSentences)
+
                 .collect(Collectors.toMap(Main::removeTokens, Main::fetchTokenList));
 
         sentenceToTokenList.forEach((sentence, tokens) -> tokens.forEach(Main::countFrequency));
@@ -39,36 +35,6 @@ class Main {
                 .sorted(Map.Entry.comparingByValue((x,y)->y-x))
                 .limit(sentenceToWeight.size() * compressionPercent / 100)
                 .forEach(x->System.out.println(x.getKey() + " W=" + x.getValue()));
-    }
-
-    private static List<String> runMyStem() {
-        // MyStem and Docs: https://tech.yandex.ru/mystem/
-        ProcessBuilder myStemProcessBuilder = new ProcessBuilder("C:/Users/MIKHAIL/Desktop/mystem.exe","-cs", "C:/Users/MIKHAIL/Desktop/text.txt");
-
-        Process myStemProcess = null;
-        try {
-            myStemProcess = myStemProcessBuilder.start();
-        } catch (IOException e) {
-            System.out.println("Cannot run MyStem: " + e.getMessage());
-        }
-
-        List<String> paragraphs = new ArrayList<>();
-        try (BufferedReader outputReader = new BufferedReader(new InputStreamReader(myStemProcess.getInputStream()))) {
-            String outputLine;
-            while ((outputLine = outputReader.readLine()) != null) {
-                paragraphs.add(outputLine.trim());
-            }
-        } catch (IOException e) {
-            System.out.println("Cannot read MyStem output: " + e.getMessage());
-        }
-
-        try {
-            myStemProcess.waitFor();
-        } catch (InterruptedException e) {
-            System.out.println("Cannot stop MyStem: " + e.getMessage());
-        }
-
-        return paragraphs;
     }
 
     private static Stream<String> splitIntoSentences(String paragraph) {
