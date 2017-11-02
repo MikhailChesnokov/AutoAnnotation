@@ -1,18 +1,16 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
 class MyStemRunner {
-    // Downloadable MyStem and Docs is available on "https://tech.yandex.ru/mystem/"
+    // The downloadable MyStem and docs are available on "https://tech.yandex.ru/mystem/"
 
-    private static String pathToMyStem = "C:/Users/MIKHAIL/Desktop/mystem.exe";
-    private static String keys = "-cs";                                         /* turns on sentences splitter {\s} */
-    private static String pathToTextFile = "C:/Users/MIKHAIL/Desktop/text.txt"; /* !!! The text file must be encoded in Unicode */
+    private final static String pathToMyStem = "C:/Users/MIKHAIL/Desktop/mystem.exe";
+    private final static String keys = "-cs";                                         /* turns on sentences splitter {\s} */
+    private final static String pathToTextFile = "C:/Users/MIKHAIL/Desktop/text.txt"; /* !!! The text file must be encoded in Unicode */
 
-    public static List<String> runMyStem() {
-        ProcessBuilder myStemProcessBuilder = new ProcessBuilder(pathToMyStem,keys, pathToTextFile);
+    static List<String> run() {
+        ProcessBuilder myStemProcessBuilder = new ProcessBuilder(pathToMyStem, keys, pathToTextFile);
 
         Process myStemProcess = null;
         try {
