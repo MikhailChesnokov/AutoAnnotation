@@ -5,9 +5,9 @@ import java.util.List;
 class MyStemRunner {
     // The downloadable MyStem and docs are available on "https://tech.yandex.ru/mystem/"
 
-    private final static String pathToMyStem = "C:/Users/MIKHAIL/Desktop/mystem.exe";
-    private final static String keys = "-cs";                                         /* turns on sentences splitter {\s} */
-    private final static String pathToTextFile = "C:/Users/MIKHAIL/Desktop/text.txt"; /* !!! The text file must be encoded in Unicode */
+    private final static String pathToMyStem = "mystem.exe";
+    private final static String keys = "-cs";                        /* "-cs" turns on sentences splitter {\s} */
+    private final static String pathToTextFile = "text_example.txt"; /* !!! The text file must be encoded in Unicode */
 
     static List<String> run() {
         ProcessBuilder myStemProcessBuilder = new ProcessBuilder(pathToMyStem, keys, pathToTextFile);
@@ -23,7 +23,9 @@ class MyStemRunner {
         try (BufferedReader outputReader = new BufferedReader(new InputStreamReader(myStemProcess.getInputStream()))) {
             String outputLine;
             while ((outputLine = outputReader.readLine()) != null) {
-                paragraphs.add(outputLine.trim());
+                if (!outputLine.isEmpty()) {
+                    paragraphs.add(outputLine.trim());
+                }
             }
         } catch (IOException e) {
             System.out.println("Cannot read MyStem output: " + e.getMessage());

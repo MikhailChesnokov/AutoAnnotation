@@ -32,6 +32,6 @@ class Main {
                 .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
                 .skip(skipSentencesCount.applyAsInt(sentenceToWeight.size()))
                 .limit(limitSentencesCount.applyAsInt(sentenceToWeight.size()))
-                .forEach(x->System.out.println(x.getValue() + " -> " + x.getKey()));
+                .forEach(x->System.out.println("Weight " + x.getValue() + ":  " + x.getKey()));
     }
 }
