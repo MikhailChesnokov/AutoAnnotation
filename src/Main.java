@@ -10,7 +10,9 @@ class Main {
 
 
     public static void main(String[] args) {
-        Map<String,List<String>> sentenceToTokenList = MyStemRunner.run()
+        List<String> myStemOutput = MyStemRunner.run();
+
+        Map<String,List<String>> sentenceToTokenList = myStemOutput
                 .stream()
                 .flatMap(SentenceProcessor::splitParagraphIntoSentences)
                 .collect(Collectors.toMap(SentenceProcessor::removeAllTokens, sentence -> SentenceProcessor
@@ -19,19 +21,28 @@ class Main {
                         .filter(TokenProcessor::isNotStopWord)
                         .collect(Collectors.toList())));
 
-        sentenceToTokenList.forEach((s, tokens) -> tokens.forEach(TokenProcessor::incrementTokenFrequency));
+        sentenceToTokenList.forEach((sentence, tokens) -> tokens.forEach(TokenProcessor::incrementTokenFrequency));
 
-        Map<String,Integer> sentenceToWeight = sentenceToTokenList.entrySet()
+        Map<String,Integer> sentenceToWeight = sentenceToTokenList
+                .entrySet()
                 .stream()
                 .collect(Collectors.toMap(Map.Entry::getKey, map -> map.getValue()
                         .stream()
                         .reduce(0, frequencyAccumulatorFunc, Integer::sum)));
 
-        sentenceToWeight.entrySet()
+        final Map<String, Integer> endSentenceToWeight = sentenceToWeight
+                .entrySet()
                 .stream()
                 .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
                 .skip(skipSentencesCount.applyAsInt(sentenceToWeight.size()))
                 .limit(limitSentencesCount.applyAsInt(sentenceToWeight.size()))
-                .forEach(x->System.out.println("Weight " + x.getValue() + ":  " + x.getKey()));
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
+        myStemOutput
+                .stream()
+                .flatMap(SentenceProcessor::splitParagraphIntoSentences)
+                .map(SentenceProcessor::removeAllTokens)
+                .filter(endSentenceToWeight::containsKey)
+                .forEach(System.out::println);
     }
 }
